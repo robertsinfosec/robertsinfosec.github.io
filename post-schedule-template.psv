@@ -1,0 +1,8 @@
+# Date|Title|Categories|Tags
+# 2024-06-04|Post Title Goes Here|category1, category2|label1, label2, label3
+#
+#   Copy this file to ./post-schedule.psv and put your post schedule in that 
+#   file. Then, run the `generate-post-schedule.ps1/sh`
+#
+# Empty lines and lines starting with "#" are skipped. The file should be in 
+# a pipe-separated format like above.
