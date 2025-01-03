@@ -44,14 +44,13 @@ social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
   name: robertsinfosec
-  email: no-reply@techbythenerd.com?subject=Undeliverable.             # change to your email address
+  email: no-reply@robertsinfosec.com?subject=Undeliverable.             # change to your email address
   links:
     # The first element serves as the copyright owner's link
-    - https://twitter.com/username      # change to your twitter homepage
-    - https://github.com/username       # change to your github homepage
-    # Uncomment below to add more social links
-    # - https://www.facebook.com/username
-    # - https://www.linkedin.com/in/username
+    - https://github.com/robertsinfosec
+    - https://www.linkedin.com/in/robertsinfosec
+    - https://twitter.com/robertsinfosec
+    - https://www.youtube.com/@robertsinfosec
 
 google_site_verification:               # fill in to your verification string
 
