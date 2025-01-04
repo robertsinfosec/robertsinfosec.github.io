@@ -5,6 +5,7 @@ source "https://rubygems.org"
 gem 'jekyll'
 gem 'bundler'
 gem "jekyll-theme-chirpy"
+gem 'jekyll-mermaid'
 #, "~> 5.1", ">= 5.1.0"
 
 
