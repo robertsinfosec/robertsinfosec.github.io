@@ -31,8 +31,8 @@ Here's an example of how you might set up your VLAN's in a homelab environment w
 
 <div class="mermaid">
 graph LR
-    B["🏠Home Network/Unifi
-    192.168.1.0/24 (VLAN 0)"]
+    B(("🏠Home Network/Unifi
+    192.168.1.0/24 (VLAN 0)"))
     B --> Users["👥 Users
     192.168.10.0/24 (VLAN 10)"]
     B --> IoT["🔌IoT Devices
@@ -40,18 +40,18 @@ graph LR
     B --> ProxMoxServer["☁️ Proxmox
     192.168.30.0/24 (VLAN 30)"]
 
-    ProxMoxServer --> F["🖥️ VM1
+    ProxMoxServer ---> F(["🖥️ VM1
     192.168.30.3/24
-    (VLAN 30)"]
-        ProxMoxServer --> G["🖥️ VM2
+    (VLAN 30)"])
+        ProxMoxServer ---> G(["🖥️ VM2
     192.168.30.4/24
-    (VLAN 30)"]
-        ProxMoxServer --> H["🖥️ VM3
+    (VLAN 30)"])
+        ProxMoxServer ---> H(["🖥️ VM3
     192.168.30.25/24
-    (VLAN 30)"]
-        ProxMoxServer --> I["🖥️ VM4
+    (VLAN 30)"])
+        ProxMoxServer ---> I(["🖥️ VM4
     192.168.30.91/24
-    (VLAN 30)"]
+    (VLAN 30)"])
 </div>
 <!-- _includes/mermaid.html -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
