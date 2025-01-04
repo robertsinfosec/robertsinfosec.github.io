@@ -29,9 +29,7 @@ So, we're NOT quite doing "microsegmentation" here, but instead we're basically 
 
 Here's an example of how you might set up your VLAN's in a homelab environment where users are on VLAN 10, your IoT devices are on VLAN 20, and your Proxmox server and its' VM's are on VLAN 30:
 
-<details><summary>Click to view the graph</summary>
-
-```mermaid
+<div class="mermaid">
 graph LR
     B["🏠Home Network/Unifi
     192.168.1.0/24 (VLAN 0)"]
@@ -54,10 +52,7 @@ graph LR
         ProxMoxServer --> I["🖥️ VM4
     192.168.30.91/24
     (VLAN 30)"]
-```
-
-</details>
-
+</div>
 <!-- _includes/mermaid.html -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>
