@@ -124,6 +124,8 @@ paginate: 10
 kramdown:
   typographic_symbols: {}
   smart_quotes: [ "apos", "apos", "quot", "quot" ]
+  hard_wrap: false
+  entity_output: as_char
   syntax_highlighter: rouge
   syntax_highlighter_opts:   # Rouge Options › https://github.com/jneen/rouge#full-options
     css_class: highlight
