@@ -60,7 +60,8 @@ graph LR
       const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const mermaidConfig = {
         startOnLoad: true,
-        theme: prefersDarkScheme ? "dark" : "default"
+        theme: prefersDarkScheme ? "dark" : "default",
+        logLevel: "debug"
       };
       mermaid.initialize(mermaidConfig);
     });
