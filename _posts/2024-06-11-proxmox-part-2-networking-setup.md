@@ -30,15 +30,15 @@ So, we're NOT quite doing "microsegmentation" here, but instead we're basically 
 Here's an example of how you might set up your VLAN's in a homelab environment where users are on VLAN 10, your IoT devices are on VLAN 20, and your Proxmox server and its' VM's are on VLAN 30:
 
 <div class="mermaid">
-graph LR
-    B(("🏠Home Network/Unifi&#10;192.168.1.0/24 (VLAN 0)"))
-    B --> Users["👥 Users&#10;192.168.10.0/24 (VLAN 10)"]
-    B --> IoT["🔌IoT Devices&#10;192.168.20.0/24 (VLAN 20)"]
-    B --> ProxMoxServer["☁️ Proxmox&#10;192.168.30.0/24 (VLAN 30)"]
-    ProxMoxServer ---> F(["🖥️ VM1&#10;192.168.30.3/24&#10;(VLAN 30)"])
-        ProxMoxServer ---> G(["🖥️ VM2&#10;192.168.30.4/24&#10;(VLAN 30)"])
-        ProxMoxServer ---> H(["🖥️ VM3&#10;192.168.30.25/24&#10;(VLAN 30)"])
-        ProxMoxServer ---> I(["🖥️ VM4&#10;192.168.30.91/24&#10;(VLAN 30)"])
+graph LR&#10;
+    B(("🏠Home Network/Unifi&#10;192.168.1.0/24 (VLAN 0)"))&#10;
+    B --> Users["👥 Users&#10;192.168.10.0/24 (VLAN 10)"]&#10;
+    B --> IoT["🔌IoT Devices&#10;192.168.20.0/24 (VLAN 20)"]&#10;
+    B --> ProxMoxServer["☁️ Proxmox&#10;192.168.30.0/24 (VLAN 30)"]&#10;
+    ProxMoxServer ---> F(["🖥️ VM1&#10;192.168.30.3/24&#10;(VLAN 30)"])&#10;
+        ProxMoxServer ---> G(["🖥️ VM2&#10;192.168.30.4/24&#10;(VLAN 30)"])&#10;
+        ProxMoxServer ---> H(["🖥️ VM3&#10;192.168.30.25/24&#10;(VLAN 30)"])&#10;
+        ProxMoxServer ---> I(["🖥️ VM4&#10;192.168.30.91/24&#10;(VLAN 30)"])&#10;
 </div>
 
 <!-- _includes/mermaid.html -->
