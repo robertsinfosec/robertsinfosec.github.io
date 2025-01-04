@@ -57,14 +57,14 @@ graph LR
 <!-- _includes/mermaid.html -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>
- //document.addEventListener("DOMContentLoaded", function () {
+ document.addEventListener("DOMContentLoaded", function () {
       const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const mermaidConfig = {
         startOnLoad: true,
         theme: prefersDarkScheme ? "dark" : "default"
       };
       mermaid.initialize(mermaidConfig);
-   // });
+    });
 </script>
 
 ### Unifi VLAN Setup
