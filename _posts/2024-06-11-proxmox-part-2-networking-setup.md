@@ -32,24 +32,24 @@ Here's an example of how you might set up your VLAN's in a homelab environment w
 <div class="mermaid">
 graph LR&#10;
     B(("🏠Home Network/Unifi&#10;192.168.1.0/24 (VLAN 0)"))&#10;
-    B --"GW: 192.168.30.1"--> ProxMoxServer
-    B --"GW: 192.168.20.1"--> IoT
-    B --"GW: 192.168.10.1"--> Users
-    subgraph VLAN 30
+    B --"GW: 192.168.30.1"--> ProxMoxServer&#10;
+    B --"GW: 192.168.20.1"--> IoT&#10;
+    B --"GW: 192.168.10.1"--> Users&#10;
+    subgraph VLAN 30&#10;
         ProxMoxServer("☁️ Proxmox&#10;192.168.30.2/24")&#10;
         ProxMoxServer -.- F(["🖥️ VM1&#10;192.168.30.3/24"])&#10;
         ProxMoxServer -.- G(["🖥️ VM2&#10;192.168.30.4/24"])&#10;
         ProxMoxServer -.- H(["🖥️ VM3&#10;192.168.30.25/24"])&#10;
         ProxMoxServer -.- I(["🖥️ VM4&#10;192.168.30.91/24"])&#10;
-    end
-    subgraph VLAN 20
+    end&#10;
+    subgraph VLAN 20&#10;
         IoT("🔌IoT Devices&#10;192.168.20.0/24")&#10;
         IoT -.- IoT1(["🖥️ VM1&#10;192.168.20.8/24"])&#10;
-    end
-    subgraph VLAN 10
+    end&#10;
+    subgraph VLAN 10&#10;
         Users("👥 Users&#10;192.168.10.0/24")&#10;
         Users -.- User1(["🖥️ VM1&#10;192.168.10.144/24"])&#10;
-    end
+    end&#10;
 </div>
 
 <!-- _includes/mermaid.html -->
