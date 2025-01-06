@@ -92,10 +92,13 @@ else
     exit 1
 fi
 
-echo -e "${CYAN}[*] Starting Jekyll server...${RESET}"
-echo -e "${GRAY}[%] Running: bundle exec jekyll serve --drafts --watch --livereload  --force_polling${RESET}"
+# Capture additional arguments
+JEKYLL_ARGS="$@"
 
-if bundle exec jekyll serve --drafts --watch --livereload --force_polling; then
+echo -e "${CYAN}[*] Starting Jekyll server...${RESET}"
+echo -e "${GRAY}[%] Running: bundle exec jekyll serve --watch --livereload --force_polling ${JEKYLL_ARGS}${RESET}"
+
+if bundle exec jekyll serve --watch --livereload --force_polling ${JEKYLL_ARGS}; then
     echo -e "${GREEN}[+] Jekyll server stopped successfully${RESET}"
 else
     echo -e "${RED}[-] Jekyll server failed${RESET}"
