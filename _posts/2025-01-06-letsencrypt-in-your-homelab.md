@@ -6,21 +6,45 @@ tags: [letsencrypt, certbot, ca, certs, certificates]
 published: true
 ---
 
-One annoying aspect of setting up a homelab is what to do about SSL certificates. You can use self-signed certificates, but then you have to deal with browser warnings. You can also use Let's Encrypt, but that requires a public domain and port forwarding. In fact, here's a quick summary of your options:
+One annoying aspect of setting up a homelab is what to do about SSL certificates. If you use self-signed certificates, then you have to deal with browser warnings. Also, many system-to-system services don't easily work with self-signed certs. So, what can be done?
+
+## Background
+
+For your internal network you can also use [Let's Encrypt](https://letsencrypt.org/), but that requires a public domain and potentially port forwarding, etc. In fact, here's a quick summary of your options, when considering what to do with SSL certs in your homelab:
 
 1. **Self-Signed Certificates**: Easy to create, but browsers will show warnings. Also, many service-to-service integrations won't work with self-signed certs.
 2. **Let's Encrypt**: Free, but requires a public domain and port forwarding. Or if you use Traefik as a load balancer, you can use the DNS challenge with Cloudflare... assuming you are OK with using Cloudflare for DNS. This does work, but it's tedious.
 3. **Wildcard Certificates**: You can buy a wildcard certificate, but that's not free. Also, you must have a real, registered domain and you do need to renew the cert every year.
 4. **Internal CA**: You can create your own internal Certificate Authority (CA) and issue certificates to your services. This is the most flexible option, but it requires some setup. Meaning, you would SSH into a server and run a command to issue a certificate. Then, copy that certificate to your service. This is a very manual process, plus you have to configure all of your homelab machines to trust this Certificate Authority (CA).
 
-There is another option though. For internet-facing systems you can use the [Lets Encrypt](https://letsencrypt.org/) service for free. Behind the scenes, Lets Encrypt uses the [ACME protocol](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) to issue certificates. You can run your own ACME server in your homelab to issue certificates just like Lets Encrypt does. This is a great option if you want to issue certificates for internal services that are not internet-facing.
+There is another option though. For internet-facing systems you can use the [Lets Encrypt](https://letsencrypt.org/) service for free. Behind the scenes, Lets Encrypt uses the [ACME protocol](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment) to issue certificates. Well, you can run your own ACME server in your homelab to issue certificates just like Lets Encrypt does. This is a great option if you want to issue certificates for internal services that are not internet-facing. There are many web servers and self-hosted services that support Lets Encrypt out of the box, so you can use the same tools and software that you would use with Lets Encrypt, but without the need for a public domain or port forwarding.
 
-In my case, I'm going to stand up a host called `acme.lab.example.com` (use your own subdomain name, here) that will issue certificates for my homelab services.
+> **NOTE**
+>
+> What is being proposed here is running an `acme` server which is compatible with LetsEncrypt technologies, like `certbot`. These certificates will be self-signed, but you can and should download the root CA certificate and trust it on all of your machines. Put another way, you are going to "trust" the Certificate Authority of your ACME server, which will make it so all of your internal certificates seem to be legit.
+{: .prompt-info}
 
-> **Why chose a local ACME instance?**
->  
-> It might seem like this is similar to using an internal CA (or just using `openssl` from the command-line). However, the significant difference here is that a LOT of software natively supports using LetsEncrypt, and specifically the ACME protocol. So, by setting up a local ACME instance, you can use the same software and tools that you would use with LetsEncrypt, but without the need for a public domain or port forwarding.
-{: .prompt-tip}
+## What is LetsEncrypt?
+
+LetsEncrypt is a free, automated, and open Certificate Authority. It is run by the Internet Security Research Group (ISRG). It uses the ACME protocol to issue certificates. The certificates are valid for 90 days and are trusted by all major browsers. Back in the olden days, you'd have to manually generate a CSR, send it to a CA, pay them, and then wait for them to send you back a certificate. You'd then move these two files (private key and public key/certificate) to a certain folder, configure your web server to point to them, and then restart your web server. This was an expensive, manual, time-consuming process.
+
+[![alt text](/assets/img/2025-01-06-letsencrypt-logo.png "LetsEncrypt Logo")](https://letsencrypt.org/)
+
+The unintended consequence of this is that many websites wouldn't have SSL certificates and just have an HTTP website. This is bad for privacy and security. LetsEncrypt changed all of this by allowing anyone and everyone to not only get free SSL certificates, but offered a mechanism to completely automate the process. For example, after initially set up, the certificate is good for 90 days. So, you run a `cron` job that runs every week that runs `certbot renew` and if the certificate is within 30 days of expiring, it will renew it. For example:
+
+```crontab
+# Run the certbot renew command every Sunday at 2:00am
+0 2 * * 0 echo "----- Certbot Renew Run: $(date) -----" >> /root/certbot-renew.log \
+          && certbot renew >> /root/certbot-renew.log 2>&1
+```
+
+Feel free to mess around on [this site](https://crontab.guru/#0_2_*_*_0) to play with different `cron` schedules. In particular, scroll to the bottom of the page and click "[Examples](https://crontab.guru/examples.html)".
+
+This means that once-configured, you never have to think about SSL certificates again since they auto-update with a process that virtually never fails. You would run this `cron` job weekly because maybe there's an internet outage or something that causes the certificate to not renew. So, you want to give it several times (the 4 weeks of the 3rd month) to try to renew before it expires.
+
+## Why chose a local ACME instance?
+
+It might seem like this is similar to using an internal CA (or just using `openssl` from the command-line). However, the significant difference here is that a LOT of software natively supports using LetsEncrypt, and specifically the ACME protocol. So, by setting up a local ACME instance, you can use the same software and tools that you would use with LetsEncrypt, but without the need for a public domain or port forwarding.
 
 Below is how you can set that up.
 
@@ -34,6 +58,8 @@ Next, create a user for the service who will be an unprivileged user and instead
 {: .prompt-info}
 
 ### Create an unprivileged user `step`
+
+It's considered a best-practice not to run services as `root`. So, we will create a user named `step` to run the `step-ca` service. This user will have a home directory of `/opt/step` and will not have the ability to log in locally. The `-m` option creates the home directory and the `-d` option sets the home directory.
 
 ```bash
 sudo useradd -m -d /opt/step step
@@ -50,7 +76,7 @@ sudo -u step <command>
 Download the `step` and `step-ca` packages from the [Smallstep website](https://smallstep.com/docs/step-cli/installation/) and install them.
 
 ```bash
-# Run as root or sudo
+# NOTE: Run as root or sudo
 # Change to the /tmp folder
 cd /tmp
 
@@ -65,11 +91,11 @@ apt install ./step-cli_amd64.deb
 apt install ./step-ca_amd64.deb
 ```
 
-This will installed `/usr/bin/step` and `/usr/bin/step-ca` binaries.
+This will install the `/usr/bin/step` and `/usr/bin/step-ca` binaries.
 
 ## STEP 3. Initialize step-ca
 
-Once installed, you need to initialize your Certificate Authority. To do that you will run this command, as your unprivileged account:
+Once installed, you need to initialize your Certificate Authority. To do that you will run this command, as your unprivileged `step` account:
 
 ```bash
 sudo -u step step ca init --ssh --acme --remote-management
@@ -77,16 +103,16 @@ sudo -u step step ca init --ssh --acme --remote-management
 
 > **What is: `sudo` as `step`?**
 >
-> Above, we are using `sudo` to run the `step` command as the `step` user. Or, you can say we are impersonating the `step` user while running this command. The user `step` and the command `step` are the same, so it can be confusing. So, here is the syntax:
+> Above, we are using `sudo` to run the `step` command as the `step` user. Or, you can say we are impersonating the `step` user while running this command. The user `step` and the command `step` are the same name, so it can be confusing. So, here is the syntax:
 >  
 > ```bash
 > sudo -u <user> <command>
 > ```
 >  
-> This is because the `step` user is an unprivileged user and does not have the ability to run commands as `root`. This is a good security practice. The `step` user will be able to run the `step-ca` service, but not have the ability to do anything else on the system.
+> This is because the `step` user is the designated, unprivileged user that should do anything related to this ACME service. This account otherwise does not have the ability to run commands as `root`. This is a good security practice. The `step` user will be able to run the `step-ca` service, but not have the ability to do anything else on the system. Meaning, if this service is ever compromised by an attacker, they shouldn't easily have a path for privilege escalation to run things as `root`.
 {: .prompt-tip}
 
-This will give you the following prompts:
+This will prompt you for the following information:
 
 - Deployment Type
 - Name of the PKI
@@ -114,19 +140,19 @@ done!
 Your PKI is ready to go. To generate certificates for individual services see 'step help ca'.
 ```
 
-### Enable the Service to listen on port 443
+### Enable the Service to be able to listen on port 443
 
-By default, you need `root` equivalent access to open a port below `1024`. So that our unprivileged user `step` can bind to port 443, we need to give that binary the permission to do so, using `setcap`:
+By default, you need `root` equivalent access to have an application expose/open a port below port `1024`. So that our unprivileged user `step` can bind to port 443, we need to give that binary the permission to do so, using `setcap`:
 
 ```bash
 setcap 'cap_net_bind_service=+ep' /usr/bin/step-ca
 ```
 
-That just needs to be run ones as `root` or `sudo`. Now, even if the `step-ca` service is running as the unprivileged `step` user, it can bind to port 443.
+That just needs to be run once as `root` or `sudo`. That gives the executable the privilege to open a port below `1024`. Now, even if the `step-ca` service is running as the unprivileged `step` user, it can bind to port 443.
 
 ## STEP 4. Start the CA Service
 
-Run the service manually, just for testing:
+First, run the service manually, just for testing:
 
 ```bash
 sudo -u step step-ca /opt/step/.step/config/ca.json
@@ -139,7 +165,7 @@ You should see output the ends like this:
 2024/12/01 17:00:00 Serving HTTPS on :443 ...
 ```
 
-You can test the endpoint, something like: `https://acme.lab.example.com/acme/acme/directory` and the output should be something like:
+You can test the endpoint in a browser with something like: `https://acme.lab.example.com/acme/acme/directory` and the output should be something like:
 
 ```json
 {
@@ -151,10 +177,13 @@ You can test the endpoint, something like: `https://acme.lab.example.com/acme/ac
 }
 ```
 
+Back at the command line, type <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop the service.
 
 ### Run as a Systemd Service
 
-Create a service unit:
+Now that we've validated that the service can run interactively, let's set up a `systemd` service to run the `step-ca` service. This will allow the service to start automatically when the system boots, and will also allow you to manage the service with `systemctl`.
+
+First, let's create a service unit:
 
 ```bash
 nano /etc/systemd/system/step-ca.service
@@ -177,11 +206,20 @@ Group=step
 WantedBy=multi-user.target
 ```
 
-The `step-ca` command will normally want to interactively prompt you for the password for the various private keys. Instead, we can use the `--password-file` option to point to a file that contains the password. This is a good practice for running services in a headless environment. In this case, I put it in the `/opt/step/.step/step-ca-password.env` file, which only the `step` user can read.
+#### Password File Permissions
+
+The `step-ca` command will normally want to interactively prompt you for the password for the various private keys (from previous steps). Instead, we can use the `--password-file` option to point to a file that contains the password. This is a good practice for running services in a headless environment. In this case, I put it in the `/opt/step/.step/step-ca-password.env` file, which only the `step` user can read. Meaning, I ran this command:
+
+```bash
+chmod 700 /opt/step/.step/step-ca-password.env
+chown step:step /opt/step/.step/step-ca-password.env
+```
+
+Then, in that file, I put the password that I used when I ran the `step ca init` command. This is a good practice for running services in a headless environment. This way, the service can start without needing to prompt for a password.
 
 ### Enable and start the service
 
-Mark the service as enabled (so it will start when the system boots) and start it:
+Mark the service as enabled (so it will start when the system boots) and start it. The `daemon-reload` tells `systemd` to reload its configuration files, which it will then find our new service unit:
 
 ```bash
 sudo systemctl daemon-reload
@@ -190,6 +228,8 @@ sudo systemctl start step-ca
 ```
 
 ### Check logs
+
+To view the logs for the `step-ca` service and "follow", `-f` them (like `tail -f`), you can run:
 
 ```bash
 sudo journalctl -u step-ca -f
@@ -220,9 +260,13 @@ Jan 06 20:03:59 acme step-ca[3031]: 2025/01/06 20:03:59 SSH User CA Key: ecdsa-s
 Jan 06 20:03:59 acme step-ca[3031]: 2025/01/06 20:03:59 Serving HTTPS on :443 ...
 ```
 
-You should now be able to use this server with `certbot` or other `step`-based tools to issue certificates.
+Now, you should now be able to use this server with `certbot` or other `step`-based tools to issue certificates.
 
 ## STEP 5. Issuing a Cert (Test)
+
+There are several different ways to issue a certificate. See below for a few different examples.
+
+### OPTION 1: Using `step`
 
 To issue a certificate from another machine in the same network, install step CLI or use certbot. For example, using step:
 
@@ -236,7 +280,9 @@ step ca certificate \
   --provisioner acme
 ```
 
-Or with Certbot, imagine we have an `apache2` web server installed. For example, you might have these packages installed:
+### OPTION 2: Using `certbot` with Apache
+
+If we have an `apache2` web server installed. For example, you might have these packages installed:
 
 ```bash
 # Install the Apache web server
@@ -249,21 +295,7 @@ sudo apt install certbot
 sudo apt install python3-certbot-apache
 ```
 
-In case you haven't "trusted" the CA root certificate, you can download it from the ACME server via `https://acme.lab.example.com/roots.pem` and then use it with `certbot` like this:
-
-```bash
-# Switch to the /tmp folder
-cd /tmp
-
-# Download the root CA certificate
-wget --no-check-certificate https://acme.lab.example.com/roots.pem
-
-# Trust the root CA
-sudo cp roots.pem /usr/local/share/ca-certificates/acme-ca-root.crt
-
-# Update the CA store
-sudo update-ca-certificates
-```
+See below for [STEP 7. Trust the Root Certificate](#step-7-trust-the-root-certificate) for how to trust the root CA certificate on your machine, and be sure to run that code.
 
 Then, you can issue a certificate with Certbot for the Apache web server like this:
 
@@ -272,6 +304,29 @@ sudo certbot --apache --server https://acme.lab.example.com/acme/acme/directory
 ```
 
 This is where it will detect your hostname configured in your `/etc/apache2/sites-available/*` files, just like the regular usage of `certbot`!
+
+### OPTION 3: Using `certbot` with `nginx`
+
+If we have an `nginx` web server installed. For example, you might have these packages installed:
+
+```bash
+# Install the Apache web server
+sudo apt install nginx
+
+# Install Certbot
+sudo apt install certbot
+
+# Install the Apache plugin for Certbot
+sudo apt install python3-certbot-nginx
+```
+
+Then, you can issue a certificate with Certbot for the Nginx web server like this:
+
+```bash
+sudo certbot --nginx --server https://acme.lab.example.com/acme/acme/directory
+```
+
+### OPTION 4: Using `certbot` with `certonly`
 
 Also, without Apache, here's an example of just getting a certificate for a single domain:
 
@@ -284,7 +339,7 @@ sudo certbot certonly \
 
 ## STEP 6. Configuring Certificate Lifetime
 
-You might notice that by default, the leaf certificates expire in 24-hours. [This is by design](), however it is configurable. You can modify the config file file:
+You might notice that by default, the leaf certificates expire in 24-hours. [This is by design](https://smallstep.com/docs/step-ca/certificate-authority-server-production/#use-short-lived-certificates), however it is configurable. You can modify the config file file:
 
 ```bash
 nano /opt/step/.step/config/ca.json
@@ -309,12 +364,17 @@ If you are wondering, `2160h` is the same as 90 days, but if I used `90d` as a s
 sudo systemctl restart step-ca
 ```
 
-You can then check for errors by running `sudo journalctl -u step-ca -f`. I mention this because if you have an extra comma or a missing comma, that is enough to make the service not-start!
+> **Syntax Errors**
+>  
+> You can then check for errors by running `sudo journalctl -u step-ca -f`. I mention this because if you have an extra comma or a missing comma, that is enough to make the service not-start. It's very easy to miss a syntax error in a JSON file, so be sure to check the logs if you have issues.
+{: .prompt-warning}
 
 
 ## STEP 7. Trust the Root Certificate
 
-For machines to trust the certificates issued by your new CA, they must trust the root CA certificate. You’ll need to install or automate distribution of your root_ca.crt to each machine’s OS trust store. For example:
+At this point you have a working ACME server that can issue certificates. However, we're still getting browser errors and server-to-server communication will show errors because the root CA is not trusted.
+
+For machines to trust the certificates issued by your new CA, they must "trust" the root CA certificate. You’ll need to install or automate distribution of your root_ca.crt to each machine’s OS trust store. For example:
 
 ### Ubuntu/Debian
 
@@ -331,7 +391,8 @@ You could scriptify this a bit by pulling down the root CA on each server, trust
 # Switch to the /tmp folder
 cd /tmp
 
-# Download the root CA certificate
+# Download the root CA certificate and ignore
+# SSL errors (because we haven't trusted the cert yet!)
 wget --no-check-certificate https://acme.lab.example.com/roots.pem
 
 # Trust the root CA
@@ -345,13 +406,17 @@ sudo update-ca-certificates
 
 Download the cert from: `https://acme.lab.example.com/roots.pem`. Use Group Policy or manually import into “Trusted Root Certification Authorities.” by launching `certmgr.msc`.
 
+![alt text](/assets/img/2025-01-06-certmgr.msc.png "certmgr.msc")
+
+From there, you can right-click on "Trusted Root Certification Authorities" and choose "All Tasks -> Import" and then follow the wizard to import the root CA certificate.
+
 ### macOS
 
 Download the cert from: `https://acme.lab.example.com/roots.pem`. Import via Keychain Access.
 
 ## STEP 8: (BONUS) Have ProxMox get certificates from your ACME CA
 
-If you are running ProxMox in your homelab, you can now have it get certificates from your ACME CA. In the Proxmox web UI, in the "Datacenter" tree, then in the "ACME" section, you'll note that you can't add an additional ACME server in addition to LetsEncrypt. We have to do that from the command line. So, SSH into your Proxmox serve and run the following:
+If you are running ProxMox in your homelab, you can now have it get certificates from your ACME CA. In the Proxmox web UI, in the "Datacenter" tree, then in the "ACME" section, you'll note that you can't add an additional ACME server in addition to LetsEncrypt. We have to do that from the command line. So, SSH into your Proxmox serve and run the following. Before you start, remember [STEP 7. Trust the Root Certificate](#step-7-trust-the-root-certificate) and make sure that the root CA is trusted on your Proxmox server:
 
 ```bash
 # Switch to the /tmp folder
@@ -389,3 +454,18 @@ When done, refresh the page and you'll see that the Proxmox server now has a cer
 ## Summary
 
 That’s it! You now have an internal ACME CA issuing certificates just like Let’s Encrypt does, except fully private to your homelab.
+
+---
+
+## Appendix
+
+Below are some additional resources that you might find helpful.
+
+### Automatic Certificate Management Environment (ACME) & RFC 8555
+
+- [RFC 8555](https://datatracker.ietf.org/doc/html/rfc8555) is the specification for the ACME protocol.
+
+### EFF's `certbot`
+
+- [Certbot](https://certbot.eff.org/) is the most popular ACME client. This website shows how many software packages natively support `certbot` for their certificate management.
+- [LetsEncrypt](https://letsencrypt.org/docs/client-options/#other-client-options) has a list of many other ACME clients that should work with it (and by extension, your local ACME server).
