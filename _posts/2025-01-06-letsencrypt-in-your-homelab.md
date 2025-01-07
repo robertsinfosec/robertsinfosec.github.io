@@ -48,7 +48,7 @@ It might seem like this is similar to using an internal CA (or just using `opens
 
 Below is how you can set that up.
 
-## STEP 1. Choose a Hostname & Create a User
+## STEP 1: Choose a Hostname & Create a User
 
 Consider name like `ca` (aka Certificate Authority) or `acme` perhaps? Makes it obvious that this host provides CA services and/or supports the ACME protocol.
 
@@ -71,7 +71,7 @@ The following steps (after installation) should be run as this user using someth
 sudo -u step <command>
 ```
 
-## STEP 2. Install `step-ca`
+## STEP 2: Install `step-ca`
 
 Download the `step` and `step-ca` packages from the [Smallstep website](https://smallstep.com/docs/step-cli/installation/) and install them.
 
@@ -93,7 +93,7 @@ apt install ./step-ca_amd64.deb
 
 This will install the `/usr/bin/step` and `/usr/bin/step-ca` binaries.
 
-## STEP 3. Initialize step-ca
+## STEP 3: Initialize step-ca
 
 Once installed, you need to initialize your Certificate Authority. To do that you will run this command, as your unprivileged `step` account:
 
@@ -150,7 +150,7 @@ setcap 'cap_net_bind_service=+ep' /usr/bin/step-ca
 
 That just needs to be run once as `root` or `sudo`. That gives the executable the privilege to open a port below `1024`. Now, even if the `step-ca` service is running as the unprivileged `step` user, it can bind to port 443.
 
-## STEP 4. Start the CA Service
+## STEP 4: Start the CA Service
 
 First, run the service manually, just for testing:
 
@@ -262,7 +262,7 @@ Jan 06 20:03:59 acme step-ca[3031]: 2025/01/06 20:03:59 Serving HTTPS on :443 ..
 
 Now, you should now be able to use this server with `certbot` or other `step`-based tools to issue certificates.
 
-## STEP 5. Issuing a Cert (Test)
+## STEP 5: Issuing a Cert (Test)
 
 There are several different ways to issue a certificate. See below for a few different examples.
 
@@ -295,7 +295,7 @@ sudo apt install certbot
 sudo apt install python3-certbot-apache
 ```
 
-See below for [STEP 7. Trust the Root Certificate](#step-7-trust-the-root-certificate) for how to trust the root CA certificate on your machine, and be sure to run that code.
+See below for [STEP 7: Trust the Root Certificate](#step-7-trust-the-root-certificate) for how to trust the root CA certificate on your machine, and be sure to run that code.
 
 Then, you can issue a certificate with Certbot for the Apache web server like this:
 
@@ -337,7 +337,7 @@ sudo certbot certonly \
   -d my-service.lab.example.com
 ```
 
-## STEP 6. Configuring Certificate Lifetime
+## STEP 6: Configuring Certificate Lifetime
 
 You might notice that by default, the leaf certificates expire in 24-hours. [This is by design](https://smallstep.com/docs/step-ca/certificate-authority-server-production/#use-short-lived-certificates), however it is configurable. You can modify the config file file:
 
@@ -370,7 +370,7 @@ sudo systemctl restart step-ca
 {: .prompt-warning}
 
 
-## STEP 7. Trust the Root Certificate
+## STEP 7: Trust the Root Certificate
 
 At this point you have a working ACME server that can issue certificates. However, we're still getting browser errors and server-to-server communication will show errors because the root CA is not trusted.
 
@@ -416,7 +416,7 @@ Download the cert from: `https://acme.lab.example.com/roots.pem`. Import via Key
 
 ## STEP 8: (BONUS) Have ProxMox get certificates from your ACME CA
 
-If you are running ProxMox in your homelab, you can now have it get certificates from your ACME CA. In the Proxmox web UI, in the "Datacenter" tree, then in the "ACME" section, you'll note that you can't add an additional ACME server in addition to LetsEncrypt. We have to do that from the command line. So, SSH into your Proxmox serve and run the following. Before you start, remember [STEP 7. Trust the Root Certificate](#step-7-trust-the-root-certificate) and make sure that the root CA is trusted on your Proxmox server:
+If you are running ProxMox in your homelab, you can now have it get certificates from your ACME CA. In the Proxmox web UI, in the "Datacenter" tree, then in the "ACME" section, you'll note that you can't add an additional ACME server in addition to LetsEncrypt. We have to do that from the command line. So, SSH into your Proxmox serve and run the following. Before you start, remember [STEP 7: Trust the Root Certificate](#step-7-trust-the-root-certificate) and make sure that the root CA is trusted on your Proxmox server:
 
 ```bash
 # Switch to the /tmp folder
