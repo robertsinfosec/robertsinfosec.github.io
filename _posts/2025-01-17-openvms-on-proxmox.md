@@ -26,7 +26,7 @@ It's not officially documented, so this took some experimenting to get working, 
 
 There are supported and documented platforms like [VMWare ESXi](https://en.wikipedia.org/wiki/VMware_ESXi) and [VirtualBox](https://www.virtualbox.org/), but I wanted to see if I could get OpenVMS working on ProxMox. Here are the steps I took:
 
-### Step 1: Download the OpenVMS VMDK Files & Upload to ProxMox
+### STEP 1: Download the OpenVMS VMDK Files & Upload to ProxMox
 
 In the e-mail from VSI, there is a specialized link to download the `.vmdk` files for OpenVMS. Download the `.zip` file and then upload them to your ProxMox server. Inside of the `.zip` was really two files:
 
@@ -56,7 +56,7 @@ Before moving on, the end-result is that I have the following files in place, on
 /mnt/pve/SSD-x1A/openvms/X86_V923-community-flat.vmdk
 ```
 
-### Step 2: Create a Blank VM in ProxMox
+### STEP 2: Create a Blank VM in ProxMox
 
 We're going to "import" the operating system drive, so we just need a basic VM. We also are going to override most of this in the config file, so it doesn't need to be perfect. Basically, just create a VM and I'll reference it as VM ID `1003`, going forward.
 
@@ -114,7 +114,7 @@ vmgenid: f5ba574e-e87a-4a83-bbcd-5037236bfddd
 > Just a reminder that things like the MAC address in `net0`, `smbios1`, and `vmgenid` should be unique.
 {: .prompt-warning }
 
-### Step 5: Start the VM
+### STEP 5: Start the VM
 
 If you are used to other OSes like Linux or Windows Server, this is a little bit different. How this works is we are connecting to the virtual "serial port" of the server to see the initial boot output. Then, we can connect to the OpenVMS system via SSH or indirectly via the ProxMox host.
 
@@ -128,7 +128,7 @@ You can see in the middle area that `DKB0` is the boot manager. So, from this `B
 
 That's all we can do from the ProxMox console.
 
-### Step 6: Connect to OpenVMS
+### STEP 6: Connect to OpenVMS
 
 There are two ways to get to a system prompt.
 
