@@ -1,6 +1,6 @@
 ---
 title: "Working Locally with Supabase"
-date: 2025-01-31 21:03:00 -500
+date: 2025-01-31 08:03:00 -500
 categories: [App Development, Backend]
 tags: [homelab, supabase, postgres, docker]
 published: true
