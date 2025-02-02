@@ -16,7 +16,7 @@ Supabase is an open-source Firebase alternative. It's a service that provides a 
 
 I couldn't be more impressed with this platform because this solves 100% of the issues you'd have with MOST applications. This gives you a full-on, proper RDBMS like PostgrSQL (which includes Row Level Security (RLS)), a full-on authentication system that has API's for signing up, logging in, forgot password, MFA/2FA, and more. Then, it also has API's (in REST and GraphQL if you want) for interacting with the database. It uses Kong as an internal API gateway too.
 
-> In short, Supabase is a "Backend as a Service" (Baas) platform, which is a complete "backend" for most applications. This includes: database, authentication, storage, and API's for it all. It's a turn-key, purpose-built backend.
+> In short, Supabase is a "Backend as a Service" (BaaS) platform, which is a complete "backend" for most applications. This includes: database, authentication, storage, and API's for it all. It's a turn-key, purpose-built backend.
 {: .prompt-tip }
 
 You can host up to two free instances on [supabase.com](https://supabase.com), but this is a free and opensource tool, so you can host it anywhere. Even better, it's Docker/Docker-Compose based. So, in literally minutes, you can stand up a full instance on your workstation too!
