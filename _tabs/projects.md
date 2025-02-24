@@ -7,11 +7,11 @@ description: A collection of various projects and works
 
 Below are some projects that I have created:
 
-## 1. [Hackatorium](https://hackatorium.com)
+## 1. <a href="https://hackatorium.com" target="_blank">Hackatorium</a>
 
 Hackatorium is a site for security research, bug bounty tips, and Capture The Flag (CTF) write-ups.
 
-<a href="https://hackatorium.com"><img src="/assets/img/projects-hackatorium.png" style="max-height: 50px;" alt="Hackatorium Logo"></a>
+<a href="https://hackatorium.com" target="_blank" style="padding-left: 30px"><img src="/assets/img/projects-hackatorium.png" style="max-height: 50px;" alt="Hackatorium Logo"></a>
 
 This project shows:
 
@@ -19,11 +19,11 @@ This project shows:
 2. My ability to write technical content in a clear and consumable way.
 3. (Planned) My approach to Bug Bounty programs and tips.
 
-## 2. [Nando Coworking](https://nandocoworking.com)
+## 2. <a href="https://nandocoworking.com" target="_blank">Nando Coworking</a>
 
 Nando Coworking is a site for a fictional coworking space. This is a Vite React front-end with a Supabase backend. The site is hosted in GitHub Pages.
 
-<a href="https://nandocoworking.com"><img src="/assets/img/projects-nandocoworking.png" style="max-height: 50px;" alt="Nando Coworking Logo"></a>
+<a href="https://nandocoworking.com" target="_blank" style="padding-left: 30px"><img src="/assets/img/projects-nandocoworking.png" style="max-height: 50px;" alt="Nando Coworking Logo"></a>
 
 This project shows:
 
@@ -34,11 +34,11 @@ This project shows:
 5. My commitment to writing clean, maintainable code and following industry best practices.
 
 
-## 3. [Subosity](https://subosity.com)
+## 3. <a href="https://subosity.com" target="_blank">Subosity</a>
 
-Subosity is a site for a fictional subscription box service. This is a Vite React front-end with a Supabase backend. The site is hosted in GitHub Pages.
+Subosity is a site for a self-hostable subscription management service. This is a Vite React front-end with a Supabase backend. The site is hosted in GitHub Pages.
 
-<a href="https://subosity.com"><img src="/assets/img/projects-subosity.png" style="max-height: 50px;" alt="Subosity Logo"></a>
+<a href="https://subosity.com" target="_blank" style="padding-left: 30px"><img src="/assets/img/projects-subosity.png" style="max-height: 50px;" alt="Subosity Logo"></a>
 
 This project shows:
 
@@ -48,17 +48,17 @@ This project shows:
 4. My knowledge of accessibility standards and best practices for web development.
 5. My commitment to writing clean, maintainable code and following industry best practices.
 
-## 4. [CodeMonkey.Science](https://codemonkey.science)
+## 4. <a href="https://codemonkey.science" target="_blank">CodeMonkey.Science</a>
 
 [COMING SOON]
 
-<a href="https://codemonkey.science"><img src="/assets/img/projects-codemonkey.png" style="max-height: 50px;" alt="CodeMonkey.Science Logo"></a>
+<a href="https://codemonkey.science" target="_blank" style="padding-left: 30px"><img src="/assets/img/projects-codemonkey.png" style="max-height: 50px;" alt="CodeMonkey.Science Logo"></a>
 
-## 5. [NetCave](https://netcave.io)
+## 5. <a href="https://netcave.io" target="_blank">NetCave</a>
 
 [COMING SOON]
 
-<a href="https://netcave.io"><img src="/assets/img/projects-netcave.png" style="max-height: 50px;" alt="NetCave Logo"></a>
+<a href="https://netcave.io" target="_blank" style="padding-left: 30px"><img src="/assets/img/projects-netcave.png" style="max-height: 50px;" alt="NetCave Logo"></a>
 
 
 ## Summary
