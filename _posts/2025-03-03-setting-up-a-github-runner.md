@@ -57,11 +57,11 @@ Navigate to your GitHub Repository or your Organization if you want the runner t
 
 ### For Organization Runners:
 
-> https://github.com/organizations/<ORG_NAME>>/settings/actions/runners
+> https://github.com/organizations/<<ORG_NAME>>/settings/actions/runners
 
 ### For Repository Runners:
 
-> https://github.com/<ORG_NAME>/<REPO_NAME>/settings/actions/runners
+> https://github.com/<<ORG_NAME>>/<<REPO_NAME>>/settings/actions/runners
 
 From either of those screens, click "New self-hosted runner" and follow the instructions making sure to pick the right OS and architecture for your VM:
 
